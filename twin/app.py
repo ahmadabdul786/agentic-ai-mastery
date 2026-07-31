@@ -12,7 +12,8 @@ MODEL_NAME = "openai/gpt-4.1-nano"
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
-print(openrouter_api_key)
+if not openrouter_api_key:
+    raise RuntimeError("OPENROUTER_API_KEY environment variable is missing.")
 openrouter = OpenAI(base_url=OPENROUTER_BASE_URL, api_key=openrouter_api_key)
 
 system = [{"role": "system", "content": TWIN_SYSTEM_PROMPT}]
@@ -38,4 +39,10 @@ if __name__ == "__main__":
         title="Digital Twin",
         description="Talk to my AI twin about my career",
         chatbot=gr.Chatbot(show_label=False),
-    ).launch(css=CSS, js=JS, theme=gr.themes.Base())
+    ).launch(
+    server_name="0.0.0.0",
+    server_port=int(os.environ.get("PORT", 7860)),
+    css=CSS,
+    js=JS,
+    theme=gr.themes.Base(),
+)
